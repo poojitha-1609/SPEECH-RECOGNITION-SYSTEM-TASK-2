@@ -1,0 +1,67 @@
+#✅ Option 1: Using SpeechRecognition Library
+#📜 File: stt_with_speechrec.py
+
+# Import the SpeechRecognition library
+import speech_recognition as sr
+
+# Define a function that performs speech-to-text transcription
+def transcribe_audio(audio_path):
+    # Create an instance of the Recognizer class
+    recognizer = sr.Recognizer()
+
+    try:
+        # Load the audio file from the given path
+        with sr.AudioFile(audio_path) as source:
+            print("[INFO] Loading audio...")
+            # Record the entire content of the audio file
+            audio_data = recognizer.record(source)
+
+        print("[INFO] Transcribing with Google Speech API...")
+        # Use Google's speech recognition service to transcribe the audio
+        text = recognizer.recognize_google(audio_data)
+
+        # Display the transcribed text
+        print("\n>> TRANSCRIPTION RESULT:\n")
+        print(text)
+
+    # Handle case when speech is unintelligible
+    except sr.UnknownValueError:
+        print("[ERROR] Could not understand the audio.")
+
+    # Handle request errors (e.g., no internet connection)
+    except sr.RequestError:
+        print("[ERROR] Could not connect to the speech recognition service.")
+
+    # Handle file not found error
+    except FileNotFoundError:
+        print(f"[ERROR] File not found: {audio_path}")
+
+# Entry point: run transcription when script is executed
+if __name__ == "__main__":
+    # Replace "audio.wav" with the path to your actual audio file
+    transcribe_audio("audio.wav")
+
+#✅ Option 2: Using Wav2Vec2.0 from Hugging Face
+#📜 File: stt_with_wav2vec.py
+# Import the pipeline method from transformers to use a pre-trained model
+from transformers import pipeline
+
+# Define a function that uses Wav2Vec2 for speech-to-text
+def transcribe_with_wav2vec(audio_file):
+    print("[INFO] Loading Wav2Vec2 model...")
+    # Load a pre-trained Wav2Vec2 model for automatic speech recognition
+    asr_pipeline = pipeline("automatic-speech-recognition")
+
+    print("[INFO] Transcribing...")
+    # Transcribe the provided audio file
+    result = asr_pipeline(audio_file)
+
+    # Display the transcribed text from the result dictionary
+    print("\n>> TRANSCRIPTION RESULT:\n")
+    print(result["text"])
+
+# Entry point of the script
+if __name__ == "__main__":
+    # Replace "audio.wav" with your actual audio file path
+    transcribe_with_wav2vec("audio.wav")
+
